@@ -1,0 +1,6 @@
+data
+.idea
+.vscode
+*.pyc
+packer.egg-info
+dist
