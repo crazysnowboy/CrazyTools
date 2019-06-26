@@ -1,8 +1,8 @@
-from packages.Crazylib import crazylib
 import sys
 import os
 
 def deploy_to_pypi():
+    from packages.crazylib import crazylib
 
     envs_dict = os.environ
     home_path= envs_dict["HOME"]
@@ -10,6 +10,7 @@ def deploy_to_pypi():
     pypirc_file = os.path.join(home_path,".pypirc")
     pip_ini_file = os.path.join(home_path,".pip/pip.conf")
     config_str=crazylib.ReadLines2OneLine("docs/pypirc")
+
     crazylib.WriteStringLine(pypirc_file,config_str)
 
 
@@ -37,8 +38,26 @@ def deploy_to_pypi():
     cmd_install="python3 -m pip install --index-url https://upload.pypi.org/legacy/ crazylib"
     # os.system(cmd_install)
 
+def git_config_user_info(user_name,user_passwd):
+    from packages.crazylib import crazylib
+
+    git_user_info_str=crazylib.ReadLines2OneLine("docs/git-credentials")
+    git_user_info_str = git_user_info_str.replace("{username}",user_name)
+    git_user_info_str = git_user_info_str.replace("{password}",user_passwd)
+
+    envs_dict = os.environ
+    home_path= envs_dict["HOME"]
+    user_info_file = os.path.join(home_path,".git-credentials")
+    crazylib.WriteStringLine(user_info_file,git_user_info_str)
+
+
+    print("write git_user_info_str = ",git_user_info_str)
+    info_str = crazylib.ReadLines2OneLine(user_info_file)
+    print("read info_str = ",info_str)
 
 def deploy_link_to_annconda():
+    from packages.crazylib import crazylib
+
     envs_dict = os.environ
     home_path= envs_dict["HOME"]
 
@@ -56,7 +75,7 @@ def deploy_link_to_annconda():
             site_package_dir = os.path.join(lib_dir,python_dir,"site-packages")
 
             crazylib_dir = os.path.join(site_package_dir,"crazylib")
-            local_crazylib_dir = os.path.join(this_path,"../","packages/Crazylib/crazylib")
+            local_crazylib_dir = os.path.join(this_path,"../","packages/crazylib/crazylib")
 
             cmd_rm ="rm -rf " +crazylib_dir
             cmd_link = "ln -s " + local_crazylib_dir +" " +crazylib_dir
@@ -66,20 +85,16 @@ def deploy_link_to_annconda():
             os.system(cmd_rm)
             os.system(cmd_link)
 
-def self_git_commit_test():
-    import crazylib
+def local_deploy():
+    deploy_link_to_annconda()
+    git_config_user_info(user_name="",
+                         user_passwd="")
 
-    cmd_list=[
-        "git status",
-        # "git add readme.md ",
-        # "git status",
-        # "git commit -m 'modified reame.md'",
-        # "git status"
-    ]
-    crazylib.git_managing(cmd_list)
 
 
 def main():
-    # deploy_link_to_annconda()
-    self_git_commit_test()
+    local_deploy()
+
+
+
 
