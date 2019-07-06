@@ -1,5 +1,7 @@
 import sys
 import os
+from packages.crazylib import crazylib
+
 
 def deploy_to_pypi():
     from packages.crazylib import crazylib
@@ -55,8 +57,7 @@ def git_config_user_info(user_name,user_passwd):
     info_str = crazylib.ReadLines2OneLine(user_info_file)
     print("read info_str = ",info_str)
 
-def deploy_link_to_annconda():
-    from packages.crazylib import crazylib
+def deploy_link_to_annconda(src_path,dst_name):
 
     envs_dict = os.environ
     home_path= envs_dict["HOME"]
@@ -66,7 +67,6 @@ def deploy_link_to_annconda():
         conda_root=os.path.join(home_path,conda_dir)
         envs = os.path.join(conda_root,"envs")
         envs_dirs = crazylib.list_curren_dir(envs)
-        this_path = crazylib.get_file_dir(__file__)
 
         for env_dir in envs_dirs:
             lib_dir=os.path.join(envs,env_dir,"lib")
@@ -74,11 +74,10 @@ def deploy_link_to_annconda():
             python_dir = crazylib.list_curren_dir(lib_dir,"python")
             site_package_dir = os.path.join(lib_dir,python_dir,"site-packages")
 
-            crazylib_dir = os.path.join(site_package_dir,"crazylib")
-            local_crazylib_dir = os.path.join(this_path,"../","packages/crazylib/crazylib")
+            dst_dir = os.path.join(site_package_dir, dst_name)
 
-            cmd_rm ="rm -rf " +crazylib_dir
-            cmd_link = "ln -s " + local_crazylib_dir +" " +crazylib_dir
+            cmd_rm ="rm -rf " +dst_dir
+            cmd_link = "ln -s " + src_path +" " +dst_dir
             print(cmd_rm)
             print(cmd_link)
 
@@ -86,14 +85,53 @@ def deploy_link_to_annconda():
             os.system(cmd_link)
 
 def local_deploy():
-    deploy_link_to_annconda()
-    git_config_user_info(user_name="",
-                         user_passwd="")
+
+    this_path = crazylib.get_file_dir(__file__)
+    src_path = os.path.join(this_path, "../", "packages/crazylib/crazylib")
+    dst_name="crazylib"
 
 
+    # src_path = "/home/collin/Documents/my_projects/CrazyGraphics/CrazyVisualizer/python/core/cpplib"
+    # dst_name="CrazyVI"
+
+    deploy_link_to_annconda(src_path,dst_name)
+
+
+    # git_config_user_info(user_name="",
+    #                      user_passwd="")
+
+def build_cpplib():
+    this_path = crazylib.get_this_path(__file__)
+
+    CPP_LIB_DIR="packages/CrazyCPPs"
+    PYTHON_LIB_DIR="packages/crazylib"
+
+    CPP_BUILD_DIR=os.path.join(CPP_LIB_DIR,"build")
+
+    os.system("rm -rf "+CPP_BUILD_DIR)
+    crazylib.makdirs(CPP_BUILD_DIR)
+
+
+    os.chdir(CPP_BUILD_DIR)
+    os.system("pwd")
+    os.system("cmake -DCMAKE_BUILD_TYPE=RELEASE ..")
+    os.system("make install -j8")
+
+    dst_dir = os.path.join(this_path,"../",PYTHON_LIB_DIR,"crazylib/core")
+
+    build_lib_dir=os.path.join(this_path,"../",CPP_LIB_DIR,"installed/python")
+    shader_dir=os.path.join(this_path,"../",CPP_LIB_DIR,"installed/shader")
+    data_dir=os.path.join(this_path,"../",CPP_LIB_DIR,"installed/data")
+
+    files_need_copy_str = os.path.join(build_lib_dir,"*.so")+" "+ os.path.join(build_lib_dir,"*.py") +" "+os.path.join(shader_dir)+" "+os.path.join(data_dir)
+    cmd = "cp -r "+files_need_copy_str+" "+ dst_dir
+    os.system(cmd)
+
+    print("----------build_cpplib done-----------")
 
 def main():
-    local_deploy()
+    # local_deploy()
+    build_cpplib()
 
 
 

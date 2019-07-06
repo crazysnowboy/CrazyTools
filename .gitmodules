@@ -1,3 +1,6 @@
 [submodule "packages/crazylib"]
 	path = packages/crazylib
 	url = https://github.com/crazysnowboy/Crazylibs.git
+[submodule "packages/CrazyCPPs"]
+	path = packages/CrazyCPPs
+	url = https://github.com/crazysnowboy/CrazyCpps.git

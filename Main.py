@@ -1,4 +1,9 @@
-# from apps import test as run
-from apps import deploy as run
+
+
+
 if __name__ == '__main__':
-    run.main()
+    # from apps import deploy as run1
+    # run1.main()
+
+    from apps import run_test as run2
+    run2.main()
