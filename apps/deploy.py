@@ -91,8 +91,6 @@ def local_deploy():
     dst_name="crazylib"
 
 
-    # src_path = "/home/collin/Documents/my_projects/CrazyGraphics/CrazyVisualizer/python/core/cpplib"
-    # dst_name="CrazyVI"
 
     deploy_link_to_annconda(src_path,dst_name)
 
@@ -108,8 +106,8 @@ def build_cpplib():
 
     CPP_BUILD_DIR=os.path.join(CPP_LIB_DIR,"build")
 
-    os.system("rm -rf "+CPP_BUILD_DIR)
-    crazylib.makdirs(CPP_BUILD_DIR)
+    # os.system("rm -rf "+CPP_BUILD_DIR)
+    # crazylib.makedirs(CPP_BUILD_DIR)
 
 
     os.chdir(CPP_BUILD_DIR)
@@ -117,15 +115,6 @@ def build_cpplib():
     os.system("cmake -DCMAKE_BUILD_TYPE=RELEASE ..")
     os.system("make install -j8")
 
-    dst_dir = os.path.join(this_path,"../",PYTHON_LIB_DIR,"crazylib/core")
-
-    build_lib_dir=os.path.join(this_path,"../",CPP_LIB_DIR,"installed/python")
-    shader_dir=os.path.join(this_path,"../",CPP_LIB_DIR,"installed/shader")
-    data_dir=os.path.join(this_path,"../",CPP_LIB_DIR,"installed/data")
-
-    files_need_copy_str = os.path.join(build_lib_dir,"*.so")+" "+ os.path.join(build_lib_dir,"*.py") +" "+os.path.join(shader_dir)+" "+os.path.join(data_dir)
-    cmd = "cp -r "+files_need_copy_str+" "+ dst_dir
-    os.system(cmd)
 
     print("----------build_cpplib done-----------")
 
